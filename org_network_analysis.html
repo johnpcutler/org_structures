@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Organizational Network Analysis</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @page { 
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .page {
+            page-break-after: always;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 0 auto;
+        }
+        .page:last-child {
+            page-break-after: avoid;
+        }
+        .node { 
+            stroke: #000;
+            stroke-width: 1px;
+        }
+        .link { 
+            stroke: #666;
+        }
+        .range-indicator {
+            background: linear-gradient(to right, #666, #000);
+            height: 6px;
+            border-radius: 3px;
+        }
+        .graph-container {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            overflow: hidden;
+        }
+        @media print {
+            html, body {
+                width: 210mm;
+                height: 297mm;
+            }
+            .graph-container {
+                break-inside: avoid;
+            }
+        }
+    </style>
+    
+</head>
+<body class="bg-white">
+    
+<style>
+@media print {
+    .container {
+        margin: 0.36in 0.25in 0.25in 0.25in !important;
+        max-width: 8in !important;
+        min-width: 8in !important;
+        padding: 0 !important;
+    }
+    
+    section {
+        break-before: always;
+        margin-bottom: 0 !important;
+    }
+
+    .graph-container {
+        page-break-inside: avoid;
+    }
+
+    /* Ensure backgrounds print */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+</style>
+
+<div class="container" style="max-width: 768px; min-width: 768px; margin: 44px 24px 24px 24px;">
+    
+    <section class="mb-12" id="scale_section" style="page-break-before: always;">
+        <div class="mb-8">
+            <h2 class="text-6xl font-bold text-black">Scale</h2>
+        </div>
+
+        <!-- Content -->
+        <div class="mb-8">            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Graph Theory Description</h3>
+                    <p class="text-gray-800">Total number of nodes in the graph</p>
+                </div>
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Organizational Description</h3>
+                    <p class="text-gray-800">How many distinct teams, roles, or units exist in the organization</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 class="text-2xl font-semibold mb-3 text-gray-900">Examples in Organizations</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Low Scale</h4>
+                        <p class="text-gray-700 text-sm">5-person startup where everyone wears multiple hats</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Medium Scale</h4>
+                        <p class="text-gray-700 text-sm">150-person growth-stage company with emerging structure</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">High Scale</h4>
+                        <p class="text-gray-700 text-sm">2,000-person enterprise with layered departments</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">5-Person Startup</h3>
+                    <div class="graph-container mb-4" id="scale_small" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                5
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                10
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                1.0
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                1.0
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">Enterprise Organization</h3>
+                    <div class="graph-container mb-4" id="scale_large" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                200
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                293
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                0.015
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                0.833
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="mb-12" id="edge_density_section" style="page-break-before: always;">
+        <div class="mb-8">
+            <h2 class="text-6xl font-bold text-black">Edge Density</h2>
+        </div>
+
+        <!-- Content -->
+        <div class="mb-8">            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Graph Theory Description</h3>
+                    <p class="text-gray-800">Ratio of actual edges to possible edges</p>
+                </div>
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Organizational Description</h3>
+                    <p class="text-gray-800">How often people or teams interact across boundaries</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 class="text-2xl font-semibold mb-3 text-gray-900">Examples in Organizations</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Low Edge Density</h4>
+                        <p class="text-gray-700 text-sm">Siloed enterprise with minimal collaboration</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Medium Edge Density</h4>
+                        <p class="text-gray-700 text-sm">Cross-functional pods with targeted touchpoints</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">High Edge Density</h4>
+                        <p class="text-gray-700 text-sm">Everyone is in contact with everyone</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">Bounded groups</h3>
+                    <div class="graph-container mb-4" id="edge_density_small" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                100
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                487
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                0.098
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                0.564
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">Chaotic startup with everyone collaborating</h3>
+                    <div class="graph-container mb-4" id="edge_density_large" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                100
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                745
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                0.151
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                0.552
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="mb-12" id="edge_weight_section" style="page-break-before: always;">
+        <div class="mb-8">
+            <h2 class="text-6xl font-bold text-black">Edge Weight</h2>
+        </div>
+
+        <!-- Content -->
+        <div class="mb-8">            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Graph Theory Description</h3>
+                    <p class="text-gray-800">Cost or effort to traverse a connection</p>
+                </div>
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Organizational Description</h3>
+                    <p class="text-gray-800">How easy or hard it is to coordinate with others</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 class="text-2xl font-semibold mb-3 text-gray-900">Examples in Organizations</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Low Edge Weight</h4>
+                        <p class="text-gray-700 text-sm">Teams integrated via APIs or async workflows</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Medium Edge Weight</h4>
+                        <p class="text-gray-700 text-sm">Cross-time-zone planning sessions</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">High Edge Weight</h4>
+                        <p class="text-gray-700 text-sm">Multi-departmental reviews and approvals</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">Lightweight Integration</h3>
+                    <div class="graph-container mb-4" id="edge_weight_small" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                48
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                128
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                0.113
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                0.159
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">Heavy Integration</h3>
+                    <div class="graph-container mb-4" id="edge_weight_large" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                48
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                132
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                0.117
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                0.402
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="mb-12" id="modularity_section" style="page-break-before: always;">
+        <div class="mb-8">
+            <h2 class="text-6xl font-bold text-black">Modularity</h2>
+        </div>
+
+        <!-- Content -->
+        <div class="mb-8">            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Graph Theory Description</h3>
+                    <p class="text-gray-800">Degree of clustering into distinct subgraphs</p>
+                </div>
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Organizational Description</h3>
+                    <p class="text-gray-800">How cleanly teams or domains are separated from one another</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 class="text-2xl font-semibold mb-3 text-gray-900">Examples in Organizations</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Low Modularity</h4>
+                        <p class="text-gray-700 text-sm">Matrixed org with shared ownership and overlapping swimlanes</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Medium Modularity</h4>
+                        <p class="text-gray-700 text-sm">Partially decoupled product groups</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">High Modularity</h4>
+                        <p class="text-gray-700 text-sm">Two-pizza teams with strict boundaries and interfaces</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">Matrixed Organization</h3>
+                    <div class="graph-container mb-4" id="modularity_small" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                60
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                559
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                0.316
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                0.811
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Teams</p>
+                            <p class="text-gray-900">
+                                4
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Cross-Team %</p>
+                            <p class="text-gray-900">
+                                11%
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Modularity</p>
+                            <p class="text-gray-900">
+                                0.517
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">Two-pizza teams with strict boundaries</h3>
+                    <div class="graph-container mb-4" id="modularity_large" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                48
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                183
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                0.162
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                0.864
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Teams</p>
+                            <p class="text-gray-900">
+                                6
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Cross-Team %</p>
+                            <p class="text-gray-900">
+                                8%
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Modularity</p>
+                            <p class="text-gray-900">
+                                0.796
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="mb-12" id="betweenness_centrality_section" style="page-break-before: always;">
+        <div class="mb-8">
+            <h2 class="text-6xl font-bold text-black">Betweenness Centrality</h2>
+        </div>
+
+        <!-- Content -->
+        <div class="mb-8">            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Graph Theory Description</h3>
+                    <p class="text-gray-800">Frequency a node lies on the shortest paths</p>
+                </div>
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Organizational Description</h3>
+                    <p class="text-gray-800">How much a person or team acts as a go-between or bottleneck</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 class="text-2xl font-semibold mb-3 text-gray-900">Examples in Organizations</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Low Betweenness Centrality</h4>
+                        <p class="text-gray-700 text-sm">Self-contained team with local ownership</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Medium Betweenness Centrality</h4>
+                        <p class="text-gray-700 text-sm">PM mediating between teams</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">High Betweenness Centrality</h4>
+                        <p class="text-gray-700 text-sm">All roadmaps run through architecture team(s)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">Self-contained teams</h3>
+                    <div class="graph-container mb-4" id="betweenness_centrality_small" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                38
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                100
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                0.142
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                0.696
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Platform Team Size</p>
+                            <p class="text-gray-900">
+                                4
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Platform Connections</p>
+                            <p class="text-gray-900">
+                                14%
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Platform Betweenness</p>
+                            <p class="text-gray-900">
+                                0.029
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">Architecture team as central hub</h3>
+                    <div class="graph-container mb-4" id="betweenness_centrality_large" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                38
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                174
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                0.248
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                0.751
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Platform Team Size</p>
+                            <p class="text-gray-900">
+                                4
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Platform Connections</p>
+                            <p class="text-gray-900">
+                                53%
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Platform Betweenness</p>
+                            <p class="text-gray-900">
+                                0.161
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="mb-12" id="closeness_centrality_section" style="page-break-before: always;">
+        <div class="mb-8">
+            <h2 class="text-6xl font-bold text-black">Closeness Centrality</h2>
+        </div>
+
+        <!-- Content -->
+        <div class="mb-8">            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Graph Theory Description</h3>
+                    <p class="text-gray-800">Average distance from one node to all others</p>
+                </div>
+                <div style="width: 370px;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-900">Organizational Description</h3>
+                    <p class="text-gray-800">How quickly someone can reach or influence others</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 class="text-2xl font-semibold mb-3 text-gray-900">Examples in Organizations</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Low Closeness Centrality</h4>
+                        <p class="text-gray-700 text-sm">Isolated backend team with few connections</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">Medium Closeness Centrality</h4>
+                        <p class="text-gray-700 text-sm">Platform team with broad reach</p>
+                    </div>
+                    <div class="p-3 border border-gray-300 rounded-lg bg-white" style="width: 245px;">
+                        <h4 class="font-medium mb-2 text-gray-800">High Closeness Centrality</h4>
+                        <p class="text-gray-700 text-sm">Just a couple hops to talk to anyone in the org</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">Deep hierarchy with minimal bridging</h3>
+                    <div class="graph-container mb-4" id="closeness_centrality_small" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                101
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                184
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                0.036
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                0.706
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Levels</p>
+                            <p class="text-gray-900">
+                                5
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg Path Length</p>
+                            <p class="text-gray-900">
+                                2.6
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Max Closeness</p>
+                            <p class="text-gray-900">
+                                0.516
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="border border-gray-300 rounded-lg p-4 bg-white" style="width: 370px;">
+                    <h3 class="text-xl font-semibold mb-3 text-black">Flat org with many bridges</h3>
+                    <div class="graph-container mb-4" id="closeness_centrality_large" style="width: 338px; height: 320px;"></div>
+                    
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Nodes</p>
+                            <p class="text-gray-900">
+                                80
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Connections</p>
+                            <p class="text-gray-900">
+                                590
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Density</p>
+                            <p class="text-gray-900">
+                                0.187
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg. Edge Weight</p>
+                            <p class="text-gray-900">
+                                0.408
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Levels</p>
+                            <p class="text-gray-900">
+                                2
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Avg Path Length</p>
+                            <p class="text-gray-900">
+                                0.83
+                            </p>
+                        </div>
+                        
+                        
+                        
+                        <div class="text-sm">
+                            <p class="font-medium text-gray-600">Max Closeness</p>
+                            <p class="text-gray-900">
+                                1.653
+                            </p>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+    
+</div>
+
+    
+    
+<!-- Load D3.js -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<!-- Load our graph configurations -->
+<script src="/static/js/graph_base.js"></script>
+<script src="/static/js/graph_types/scale.js"></script>
+<script src="/static/js/graph_types/edge_density.js"></script>
+<script src="/static/js/graph_types/edge_weight.js"></script>
+<script src="/static/js/graph_types/modularity.js"></script>
+<script src="/static/js/graph_types/betweenness_centrality.js"></script>
+<script src="/static/js/graph_types/closeness_centrality.js"></script>
+
+<script>
+// Initialize graph data from template
+const GRAPH_DATA = [{
+        "name": "Scale",
+        "type": "scale",
+        "small_example": "5-Person Startup",
+        "large_example": "Enterprise Organization"
+    },{
+        "name": "Edge Density",
+        "type": "edge_density",
+        "small_example": "Bounded groups",
+        "large_example": "Chaotic startup with everyone collaborating"
+    },{
+        "name": "Edge Weight",
+        "type": "edge_weight",
+        "small_example": "Lightweight Integration",
+        "large_example": "Heavy Integration"
+    },{
+        "name": "Modularity",
+        "type": "modularity",
+        "small_example": "Matrixed Organization",
+        "large_example": "Two-pizza teams with strict boundaries"
+    },{
+        "name": "Betweenness Centrality",
+        "type": "betweenness_centrality",
+        "small_example": "Self-contained teams",
+        "large_example": "Architecture team as central hub"
+    },{
+        "name": "Closeness Centrality",
+        "type": "closeness_centrality",
+        "small_example": "Deep hierarchy with minimal bridging",
+        "large_example": "Flat org with many bridges"
+    }];
+
+// Create graph based on type
+function createGraph(data, containerId) {
+    // Extract graph type from container ID (e.g., "edge_density_small" -> "edge_density")
+    const graphType = containerId.split('_small')[0].split('_large')[0];
+    const isSmall = containerId.includes('_small');
+    
+    let config;
+    switch (graphType) {
+        case 'scale':
+            config = isSmall ? ScaleGraphConfig.left : ScaleGraphConfig.right;
+            break;
+        case 'edge_density':
+            config = isSmall ? EdgeDensityGraphConfig.left : EdgeDensityGraphConfig.right;
+            break;
+        case 'edge_weight':
+            config = isSmall ? EdgeWeightGraphConfig.left : EdgeWeightGraphConfig.right;
+            break;
+        case 'modularity':
+            config = isSmall ? ModularityGraphConfig.left : ModularityGraphConfig.right;
+            break;
+        case 'betweenness_centrality':
+            config = isSmall ? BetweennessCentralityGraphConfig.left : BetweennessCentralityGraphConfig.right;
+            break;
+        case 'closeness_centrality':
+            config = isSmall ? ClosenessCentralityGraphConfig.left : ClosenessCentralityGraphConfig.right;
+            break;
+        default:
+            console.error(`Unknown graph type: ${graphType}`);
+            return;
+    }
+    
+    config.createVisualization(containerId, data);
+}
+
+// Load graph data and create visualizations
+async function loadAllGraphs() {
+    for (const graph of GRAPH_DATA) {
+        try {
+            const response = await fetch(`/output/${graph.type}_source_data.json`);
+            const data = await response.json();
+            
+            // Create graphs
+            createGraph(data.small, `${graph.type}_small`);
+            createGraph(data.large, `${graph.type}_large`);
+        } catch (error) {
+            console.error(`Error loading ${graph.name} data:`, error);
+        }
+    }
+}
+
+// Load data and create graphs
+window.addEventListener('load', loadAllGraphs);
+
+// Redraw graphs when window is resized
+window.addEventListener('resize', loadAllGraphs);
+</script>
+
+</body>
+</html> 
